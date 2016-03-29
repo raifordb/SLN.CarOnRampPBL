@@ -4,6 +4,7 @@ using CarOnRampPBL.Services.SettingsServices;
 using Windows.ApplicationModel.Activation;
 using Template10.Controls;
 using Template10.Common;
+using CarOnRampPBL.Services.PhysicsCalculator;
 
 namespace CarOnRampPBL
 {
@@ -12,6 +13,10 @@ namespace CarOnRampPBL
 
     sealed partial class App : Template10.Common.BootStrapper
     {
+        #region Static Public Members
+        public static Calulator PhyCal;
+        #endregion
+
         public App()
         {
             Microsoft.ApplicationInsights.WindowsAppInitializer.InitializeAsync(

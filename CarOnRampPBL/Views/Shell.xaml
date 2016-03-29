@@ -21,6 +21,12 @@
                     <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" Text="Home" />
                 </StackPanel>
             </Controls:HamburgerButtonInfo>
+            <Controls:HamburgerButtonInfo ClearHistory="True" PageType="views:Simulator">
+                <StackPanel Orientation="Horizontal">
+                    <SymbolIcon Width="48" Height="48" Symbol="People" />
+                    <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" Text="Simulator" />
+                </StackPanel>
+            </Controls:HamburgerButtonInfo>
         </Controls:HamburgerMenu.PrimaryButtons>
 
         <Controls:HamburgerMenu.SecondaryButtons>
