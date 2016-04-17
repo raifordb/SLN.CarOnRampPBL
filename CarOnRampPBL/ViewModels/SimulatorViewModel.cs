@@ -21,10 +21,16 @@ namespace CarOnRampPBL.ViewModels
         #region Private Members
         private const double DisplayLengthToUse = 1620;
         private const double DisplayHeightToUse = 500;
+        private const double CarLength = 15;
+        private const double OffSetX = -10;
+        private const double OffSetY = -10;
         private int _timeLineTime;
         private DispatcherTimer _smulatorTimer = new DispatcherTimer();
+        private bool _isRampChanging = false;
+        #endregion
 
-        public static event AddTimeLineMarkEventHandler AddTimeLineMark;
+        #region Events
+        public event AddTimeLineMarkEventHandler AddTimeLineMark;
         #endregion
 
         public SimulatorViewModel()
@@ -60,9 +66,30 @@ namespace CarOnRampPBL.ViewModels
         }
 
         #region Bound Properties
-        //Display
-        public double DisplayLength { get { return DisplayLengthToUse; } }
-        public double DisplayHeight { get { return DisplayHeightToUse; } }
+        //Car
+        private double _carBodyP1x = 0.0f;
+        public double CarBodyP1x { get { return _carBodyP1x; } set { Set(ref _carBodyP1x, value); } }
+
+        private double _carBodyP1y = 0.0f;
+        public double CarBodyP1y { get { return _carBodyP1y; } set { Set(ref _carBodyP1y, value); } }
+
+        private double _carBodyP2x = 0.0f;
+        public double CarBodyP2x { get { return _carBodyP2x; } set { Set(ref _carBodyP2x, value); } }
+
+        private double _carBodyP2y = 0.0f;
+        public double CarBodyP2y { get { return _carBodyP2y; } set { Set(ref _carBodyP2y, value); } }
+
+        private double _carWheelFrontx = 0.0f;
+        public double CarWheelFrontx { get { return _carWheelFrontx; } set { Set(ref _carWheelFrontx, value); } }
+
+        private double _carWheelFronty = 0.0f;
+        public double CarWheelFronty { get { return _carWheelFronty; } set { Set(ref _carWheelFronty, value); } }
+
+        private double _carWheelBackx = 0.0f;
+        public double CarWheelBackx { get { return _carWheelBackx; } set { Set(ref _carWheelBackx, value); } }
+
+        private double _carWheelBacky = 0.0f;
+        public double CarWheelBacky { get { return _carWheelBacky; } set { Set(ref _carWheelBacky, value); } }
 
         //Time Line
         private double _timeLinePointer = 10.0f;
@@ -98,14 +125,47 @@ namespace CarOnRampPBL.ViewModels
         public Double FloorFriction { get { return _floorFriction; } set { Set(ref _floorFriction, value); } }
 
         //Sliders
-        private double _rampLenght = 0.0f;
+        private double _rampLength = 20.0f;
         public double RampLength
         {
-            get { return _rampLenght; }
+            get { return _rampLength; }
             set
             {
-                Set(ref _rampLenght, value);
-                DrawRamp();
+                Set(ref _rampLength, value);
+                if (!_isRampChanging)
+                {
+                    _isRampChanging = true;
+                    RampLengthDisplay = string.Format("{0:###} cm", value);
+                    DrawRamp();
+                }
+                _isRampChanging = false;
+            }
+        }
+
+        private string _rampLengthDisplay = string.Empty;
+        public string RampLengthDisplay
+        {
+            get { return _rampLengthDisplay; }
+            set
+            {
+                string strRampLength = value.TrimEnd(new char[] { 'c', 'm' });
+                double dRampLength = 0.0;
+                if (double.TryParse(strRampLength, out dRampLength))
+                {
+                    Set(ref _rampLengthDisplay, value);
+                    if (!_isRampChanging)
+                    {
+                        _isRampChanging = true;
+                        RampLength = dRampLength;
+                        DrawRamp();
+                    }
+                    _isRampChanging = false;
+                }
+                else
+                {
+                    RampLength = 20.0f;
+                    Set(ref _rampLengthDisplay, "20 cm");
+                }
             }
         }
 
@@ -115,21 +175,96 @@ namespace CarOnRampPBL.ViewModels
             get { return _rampHeight; }
             set
             {
-                Set(ref _rampHeight, value);
-                DrawRamp();
+                if (value <= _rampLength)
+                {
+                    Set(ref _rampHeight, value);
+                    if (!_isRampChanging)
+                    {
+                        _isRampChanging = true;
+                        RampHeightDisplay = string.Format("{0:###} cm", value);
+                        DrawRamp();
+                    }
+                    _isRampChanging = false;
+                }
             }
         }
 
-        private double _carPosition = 0.0f;
+        private string _rampHeightDisplay = string.Empty;
+        public string RampHeightDisplay
+        {
+            get { return _rampHeightDisplay; }
+            set
+            {
+                string strRampHeight = value.TrimEnd(new char[] { 'c', 'm' });
+                double dRampHeight = 0.0;
+                if (double.TryParse(strRampHeight, out dRampHeight))
+                {
+                    if (dRampHeight <= _rampLength)
+                    {
+                        Set(ref _rampHeightDisplay, value);
+                        if (!_isRampChanging)
+                        {
+                            _isRampChanging = true;
+                            RampHeight = dRampHeight;
+                            DrawRamp();
+                        }
+                        _isRampChanging = false;
+                    }
+                }
+                else
+                {
+                    RampHeight = 0.0f;
+                    Set(ref _rampHeightDisplay, "0 cm");
+                }
+            }
+        }
+
+        private double _carPosition = (CarLength / 2);
         public double CarPosition
         {
             get { return _carPosition; }
             set
             {
-                Set(ref _carPosition, value);
-                if ((RampLength > 0) && (RampHeight > 0))
+                if ((value <= (_rampLength - CarLength / 2)) && (value >= (CarLength / 2)))
                 {
-                    DrawRamp();
+                    Set(ref _carPosition, value);
+                    if (!_isRampChanging)
+                    {
+                        _isRampChanging = true;
+                        CarPositionDisplay = string.Format("{0:###} cm", value);
+                        DrawRamp();
+                    }
+                    _isRampChanging = false;
+                }
+            }
+        }
+
+        private string _carPositionDisplay = string.Empty;
+        public string CarPositionDisplay
+        {
+            get { return _carPositionDisplay; }
+            set
+            {
+                string strCarPosition = value.TrimEnd(new char[] { 'c', 'm' });
+                double dCarPosition = 0.0;
+                if (double.TryParse(strCarPosition, out dCarPosition))
+                {
+                    if ((dCarPosition <= (_rampLength - CarLength / 2)) && (dCarPosition >= (CarLength / 2)))
+                    {
+                        Set(ref _carPositionDisplay, value);
+                        if (!_isRampChanging)
+                        {
+                            _isRampChanging = true;
+                            CarPosition = dCarPosition;
+                            DrawRamp();
+                        }
+                        _isRampChanging = false;
+                    }
+                }
+                else
+                {
+                    CarPosition = (CarLength / 2);
+                    Set(ref _carPositionDisplay, string.Format("{0:###} cm", (CarLength / 2)));
                 }
             }
         }
@@ -232,6 +367,66 @@ namespace CarOnRampPBL.ViewModels
         #endregion
 
         #region DrawDisplay
+        private void DrawCar()
+        {
+            double CarLengthScale = (CarLength * DisplayLengthToUse / 200);
+            double OffSetXScale = CalculateOffSetX((OffSetX * DisplayLengthToUse / 200));
+            double OffSetYScale = CalculateOffSetY((OffSetY * DisplayLengthToUse / 200));
+            double WheelOffSetScale = 26;
+            double CarPositionScale = (CarPosition * DisplayLengthToUse / 200);
+            double angleInDegrees = CalculateRampAngle();
+
+            PointF CarBodyFront = new PointF();
+            CarBodyFront.X = (double)((CarPositionScale - (CarLengthScale / 2)) * Math.Cos(angleInDegrees * Math.PI / 180F)) + RampBottomX + OffSetXScale;
+            CarBodyFront.Y = (double)((CarPositionScale - (CarLengthScale / 2)) * Math.Sin(angleInDegrees * Math.PI / 180F)) + RampBottomY + OffSetYScale;
+
+            PointF CarBodyBack = new PointF();
+            CarBodyBack.X = (double)((CarPositionScale + (CarLengthScale / 2)) * Math.Cos(angleInDegrees * Math.PI / 180F)) + RampBottomX + OffSetXScale;
+            CarBodyBack.Y = (double)((CarPositionScale + (CarLengthScale / 2)) * Math.Sin(angleInDegrees * Math.PI / 180F)) + RampBottomY + OffSetYScale;
+
+            PointF CarWheelFront = new PointF();
+            CarWheelFront.X = (double)((CarPositionScale - (CarLengthScale / 2) + WheelOffSetScale) * Math.Cos(angleInDegrees * Math.PI / 180F)) + RampBottomX + OffSetXScale;
+            CarWheelFront.Y = (double)((CarPositionScale - (CarLengthScale / 2) + WheelOffSetScale) * Math.Sin(angleInDegrees * Math.PI / 180F)) + RampBottomY + OffSetYScale;
+
+            PointF CarWheelBack = new PointF();
+            CarWheelBack.X = (double)((CarPositionScale + (CarLengthScale / 2) - WheelOffSetScale) * Math.Cos(angleInDegrees * Math.PI / 180F)) + RampBottomX + OffSetXScale;
+            CarWheelBack.Y = (double)((CarPositionScale + (CarLengthScale / 2) - WheelOffSetScale) * Math.Sin(angleInDegrees * Math.PI / 180F)) + RampBottomY + OffSetYScale;
+
+            CarBodyP1x = CarBodyFront.X;
+            CarBodyP1y = CarBodyFront.Y;
+
+            CarBodyP2x = CarBodyBack.X;
+            CarBodyP2y = CarBodyBack.Y;
+
+            CarWheelBackx = CarWheelBack.X - 20;
+            CarWheelBacky = CarWheelBack.Y - 20;
+
+            CarWheelFrontx = CarWheelFront.X - 20;
+            CarWheelFronty = CarWheelFront.Y - 20;
+        }
+
+        private double CalculateOffSetY(double OffSetScale)
+        {
+            double angleInDegrees = CalculateRampAngle();
+            double SinOfAngle = Math.Sin((180 - angleInDegrees) * Math.PI / 180F);
+
+            if ((SinOfAngle > 0) && !double.IsNaN(SinOfAngle))
+                return OffSetScale / SinOfAngle;
+            else
+                return 0;
+        }
+
+        private double CalculateOffSetX(double OffSetScale)
+        {
+            double angleInDegrees = CalculateRampAngle();
+            double SinOfAngle = Math.Sin(angleInDegrees * Math.PI / 180F);
+
+            if (!double.IsNaN(SinOfAngle))
+                return OffSetScale * SinOfAngle;
+            else
+                return 0;
+        }
+
         private void DrawRamp()
         {
             RampBottomX = DisplayLengthToUse - (RampLength * DisplayLengthToUse / 200);
@@ -250,6 +445,7 @@ namespace CarOnRampPBL.ViewModels
                 RampTopX = DisplayLengthToUse;
                 RampTopY = RampBottomY;
             }
+            DrawCar();
         }
 
         private PointF PointOnCircle(double radius, double angleInDegrees, PointF origin)

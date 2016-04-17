@@ -26,8 +26,12 @@
                     <VisualState.Setters>
                         <Setter Target="TimeLineScale.(ScaleX)" Value="0.25" />
                         <Setter Target="TimeLineScale.(ScaleY)" Value="0.25" />
+                        <Setter Target="cvsTimeLine.(Height)" Value="15" />
+                        <Setter Target="cvsTimeLine.(Width)" Value="405" />
                         <Setter Target="DisplayScale.(ScaleX)" Value="0.25" />
                         <Setter Target="DisplayScale.(ScaleY)" Value="0.25" />
+                        <Setter Target="cvsDisplay.(Height)" Value="125" />
+                        <Setter Target="cvsDisplay.(Width)" Value="405" />
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="VisualStateNormal">
@@ -37,8 +41,12 @@
                     <VisualState.Setters>
                         <Setter Target="TimeLineScale.(ScaleX)" Value="0.5" />
                         <Setter Target="TimeLineScale.(ScaleY)" Value="0.5" />
+                        <Setter Target="cvsTimeLine.(Height)" Value="30" />
+                        <Setter Target="cvsTimeLine.(Width)" Value="810" />
                         <Setter Target="DisplayScale.(ScaleX)" Value="0.5" />
                         <Setter Target="DisplayScale.(ScaleY)" Value="0.5" />
+                        <Setter Target="cvsDisplay.(Height)" Value="250" />
+                        <Setter Target="cvsDisplay.(Width)" Value="810" />                        
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="VisualStateWide">
@@ -48,8 +56,12 @@
                     <VisualState.Setters>
                         <Setter Target="TimeLineScale.(ScaleX)" Value="1" />
                         <Setter Target="TimeLineScale.(ScaleY)" Value="1" />
+                        <Setter Target="cvsTimeLine.(Height)" Value="60" />
+                        <Setter Target="cvsTimeLine.(Width)" Value="1620" />
                         <Setter Target="DisplayScale.(ScaleX)" Value="1" />
                         <Setter Target="DisplayScale.(ScaleY)" Value="1" />
+                        <Setter Target="cvsDisplay.(Height)" Value="500" />
+                        <Setter Target="cvsDisplay.(Width)" Value="1620" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
@@ -159,7 +171,7 @@
                 
                 <!--Display-->
                 <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Display" />
-                <Canvas x:Name="cvsDisplay" Background="White" Height="{x:Bind ViewModel.DisplayHeight}" Width="{x:Bind ViewModel.DisplayLength}">
+                <Canvas x:Name="cvsDisplay" Background="White" Height="500" Width="1620">
                     <Canvas.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform x:Name="DisplayScale" CenterX="0" CenterY="0" ScaleX="1" ScaleY="1" />
@@ -172,7 +184,19 @@
                           Stroke="Black" StrokeThickness="2" />
                     <Line x:Name="FloorFriction" X1="{x:Bind ViewModel.FloorFrictionX1, Mode=OneWay}" Y1="{x:Bind ViewModel.FloorFrictionY1, Mode=OneWay}" 
                                                  X2="{x:Bind ViewModel.FloorFrictionX2, Mode=OneWay}"  Y2="{x:Bind ViewModel.FloorFrictionY2, Mode=OneWay}" 
-                          Stroke="LightGray" StrokeThickness="{x:Bind ViewModel.FloorFriction, Mode=OneWay}" />                    
+                          Stroke="LightGray" StrokeThickness="{x:Bind ViewModel.FloorFriction, Mode=OneWay}" />
+
+                    <Line x:Name="CarBody" X1="{x:Bind ViewModel.CarBodyP1x, Mode=OneWay}" Y1="{x:Bind ViewModel.CarBodyP1y, Mode=OneWay}" 
+                                           X2="{x:Bind ViewModel.CarBodyP2x, Mode=OneWay}"  Y2="{x:Bind ViewModel.CarBodyP2y, Mode=OneWay}" 
+                          Stroke="Black" StrokeThickness="20" />
+
+                    <Ellipse Fill="SteelBlue" Height="40" Width="40" 
+                             Canvas.Left="{x:Bind ViewModel.CarWheelFrontx, Mode=OneWay}"
+                             Canvas.Top="{x:Bind ViewModel.CarWheelFronty, Mode=OneWay}"/>
+
+                    <Ellipse Fill="SteelBlue" Height="40" Width="40" 
+                             Canvas.Left="{x:Bind ViewModel.CarWheelBackx, Mode=OneWay}"
+                             Canvas.Top="{x:Bind ViewModel.CarWheelBacky, Mode=OneWay}"/>
 
                 </Canvas>       
                 
@@ -197,38 +221,38 @@
                         <ColumnDefinition Width="10" />
                         <ColumnDefinition Width="100" />
                         <ColumnDefinition Width="10" />
-                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="150" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" Foreground="Blue" Text="Ramp Height:" />
                     <Slider Name="RampHeightSlider" Grid.Row="0" Grid.Column="3" Minimum="0" Maximum="100" 
                             Value="{x:Bind ViewModel.RampHeight, Mode=TwoWay}" Header="{Binding FallbackValue, ElementName=RampHeightSlider}"></Slider>
-                    <TextBox Grid.Row="0" Grid.Column="5" />
+                    <TextBox Grid.Row="0" Grid.Column="5" Text="{Binding RampHeightDisplay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100" />
                     <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" Foreground="Blue" Text="Ramp Lenght:" />
                     <Slider Name="RampLengthSlider" Grid.Row="1" Grid.Column="3" Minimum="10" Maximum="100" 
                             Value="{x:Bind ViewModel.RampLength, Mode=TwoWay}" Header="{Binding FallbackValue, ElementName=RampLengthSlider}"></Slider>
-                    <TextBox Grid.Row="1" Grid.Column="5" />
+                    <TextBox Grid.Row="1" Grid.Column="5" Text="{Binding RampLengthDisplay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Width="100" />
                     <TextBlock Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" Foreground="Blue" Text="Car Position:" />
                     <Slider Name="CarPositionSlider" Grid.Row="2" Grid.Column="3" Minimum="0" Maximum="{Binding Value, ElementName=RampLengthSlider}" 
                             Value="{x:Bind ViewModel.CarPosition, Mode=TwoWay}" Header="{Binding FallbackValue, ElementName=CarPositionSlider}"></Slider>
-                    <TextBox Grid.Row="2" Grid.Column="5" />
+                    <TextBox Grid.Row="2" Grid.Column="5" Text="{Binding CarPositionDisplay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100" />
                     <TextBlock Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" Foreground="Blue" Text="Car Weight:" />
                     <Slider Name="CarWeightSlider" Grid.Row="3" Grid.Column="3" Minimum="0" Maximum="100" 
                             Value="{x:Bind ViewModel.CarWeight, Mode=TwoWay}" Header="{Binding FallbackValue, ElementName=CarWeightSlider}"></Slider>
-                    <TextBox Grid.Row="3" Grid.Column="5" />
+                    <TextBox Grid.Row="3" Grid.Column="5" Width="100" />
                     <TextBlock Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" Foreground="Blue" Text="Friction Coefficient" />
                     <TextBlock Grid.Row="6" Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" Foreground="Blue" Text="     Ramp:" />
                     <Slider Name="FCRampSlider" Grid.Row="6" Grid.Column="3" Minimum="0" Maximum="100" 
                             Value="{x:Bind ViewModel.FCRamp, Mode=TwoWay}" Header="{Binding FallbackValue, ElementName=FCRampSlider}"></Slider>
-                    <TextBox Grid.Row="6" Grid.Column="5" />
+                    <TextBox Grid.Row="6" Grid.Column="5" Width="100" />
                     <TextBlock Grid.Row="7" Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" Foreground="Blue" Text="     Floor" />
                     <Slider Name="FCFloorSlider" Grid.Row="7" Grid.Column="3" Minimum="0" Maximum="100" 
                             Value="{x:Bind ViewModel.FCFloor, Mode=TwoWay}" Header="{Binding FallbackValue, ElementName=FCFloorSlider}"></Slider>
-                    <TextBox Grid.Row="7" Grid.Column="5" />
+                    <TextBox Grid.Row="7" Grid.Column="5" Width="100" />
                     <TextBlock Grid.Row="9" Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" Foreground="Blue" Text="Damage Coefficient:" />
                     <Slider Name="DamageCSlider" Grid.Row="9" Grid.Column="3" Minimum="0" Maximum="100" 
                             Value="{x:Bind ViewModel.DamageC, Mode=TwoWay}" Header="{Binding FallbackValue, ElementName=DamageCSlider}"></Slider>
-                    <TextBox Grid.Row="9" Grid.Column="5" />
+                    <TextBox Grid.Row="9" Grid.Column="5" Width="100" />
                 </Grid>                            
             </StackPanel>
         </ScrollViewer>

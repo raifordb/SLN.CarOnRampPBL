@@ -28,7 +28,18 @@ namespace CarOnRampPBL.Views
         public Simulator()
         {
             this.InitializeComponent();
-            SimulatorViewModel.AddTimeLineMark += SimulatorViewModel_AddTimeLineMark;
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            var vm = DataContext as SimulatorViewModel;
+            vm.AddTimeLineMark += SimulatorViewModel_AddTimeLineMark;
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            var vm = DataContext as SimulatorViewModel;
+            vm.AddTimeLineMark -= SimulatorViewModel_AddTimeLineMark;
         }
 
         private void SimulatorViewModel_AddTimeLineMark(double xPosTime)
